@@ -14,10 +14,10 @@ import com.example.codingapp.model.Images
 import com.example.codingapp.ui.adapter.ImageListAdapter
 import com.example.codingapp.util.Util
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
 
     private lateinit var binding: ActivityMainBinding
-    private val imageListAdapter = ImageListAdapter(arrayListOf())
+    private val imageListAdapter = ImageListAdapter(arrayListOf(),this)
 
     //creating viewmodel
     private lateinit var viewModel: MainViewModel
@@ -97,6 +97,10 @@ class MainActivity : AppCompatActivity() {
     }
     private val loadingErrorDataObserver = Observer<Boolean> { isError ->
         binding.listError.visibility = if (isError) View.VISIBLE else View.GONE
+    }
+
+    override fun onItemClicked(image: Images) {
+        Toast.makeText(this@MainActivity, "Clicked", Toast.LENGTH_SHORT).show()
     }
 
 }

@@ -13,11 +13,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 
-class MainViewModel(application: Application):AndroidViewModel(application){
+class MainViewModel(application: Application) : AndroidViewModel(application) {
     val loadError by lazy { MutableLiveData<Boolean>() }
     val loading by lazy { MutableLiveData<Boolean>() }
 
-    val imageList by lazy { MutableLiveData<List<Images>>()}
+    val imageList by lazy { MutableLiveData<List<Images>>() }
 
     //create shared pref instance
     val prefs = SharedPreferenceHelper(getApplication())
@@ -28,20 +28,20 @@ class MainViewModel(application: Application):AndroidViewModel(application){
     //create api service
     private val api = ImgurApiService()
 
-     fun getImages(searchInput: String?) {
+    fun getImages(searchInput: String?) {
+        loading.value = true
         disposable.add(
             api.getImages(searchInput)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableSingleObserver<ImageResponse>(){
+                .subscribeWith(object : DisposableSingleObserver<ImageResponse>() {
                     override fun onSuccess(imageResponse: ImageResponse) {
-                        if(imageResponse.success){
-                            loadError.value=false
-                            loading.value=false
+                        if (imageResponse.success) {
+                            loadError.value = false
+                            loading.value = false
                             //images.value=imageResponse
                             filterImagesFromGallery(imageResponse)
-                        }
-                        else{
+                        } else {
                             loadError.value = true
                             loading.value = false
                             Log.e("api response fail=", imageResponse.toString())
@@ -49,10 +49,10 @@ class MainViewModel(application: Application):AndroidViewModel(application){
                     }
 
                     override fun onError(e: Throwable) {
-                        loading.value=false
-                        loadError.value=true
+                        loading.value = false
+                        loadError.value = true
                         //images.value=null
-                        imageList.value=null
+                        imageList.value = null
                         e.printStackTrace()
                     }
 
@@ -66,19 +66,20 @@ class MainViewModel(application: Application):AndroidViewModel(application){
      */
 
     fun filterImagesFromGallery(imageResponse: ImageResponse) {
-        var finalList= mutableListOf<Images>()
+        var finalList = mutableListOf<Images>()
 
-        if(imageResponse.success && !imageResponse.data.isNullOrEmpty())
-        {
-            for (data in imageResponse.data){
-                if(!data.images.isNullOrEmpty()){
-                 val list = data.images.filter { it.type=="image/jpeg"|| it.type=="image/png"
-                            || it.type=="image/gif"}.toMutableList()
+        if (imageResponse.success && !imageResponse.data.isNullOrEmpty()) {
+            for (data in imageResponse.data) {
+                if (!data.images.isNullOrEmpty()) {
+                    val list = data.images.filter {
+                        it.type == "image/jpeg" || it.type == "image/png"
+                                || it.type == "image/gif"
+                    }.toMutableList()
                     finalList.addAll(list)
                 }
             }
-            imageList.value=finalList
-            Log.d("size","size=${finalList.size}")
+            imageList.value = finalList
+            Log.d("size", "size=${finalList.size}")
         }
     }
 

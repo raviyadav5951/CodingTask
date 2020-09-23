@@ -25,12 +25,10 @@ fun ImageView.loadImage(view: ImageView, url: String?) {
 
     val options = RequestOptions()
         .placeholder(getProgressDrawable(view.context))
-        .error(R.mipmap.ic_launcher_round)
+        .error(R.drawable.placeholder)
 
     Glide.with(context)
         .setDefaultRequestOptions(options)
         .load(url)
         .into(this)
-
-
 }
