@@ -117,10 +117,3 @@ data class Ad_config (
     val wallUnsafeFlags : List<String>,
     val showsAds : Boolean
 )
-
-data class FinalImage(
-    val title: String,
-    val type: String,
-    val link: String,
-    val description: String
-)

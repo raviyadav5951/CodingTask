@@ -2,13 +2,12 @@ package com.example.codingapp.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.codingapp.R
 import com.example.codingapp.databinding.ActivityMainBinding
@@ -35,7 +34,7 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
         initSearchView()
 
         //creating viewmodel
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         //observer assignment
         viewModel.imageList.observe(this, imagesListDataObserver)
@@ -43,6 +42,7 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
         viewModel.loadError.observe(this, loadingErrorDataObserver)
         viewModel.noResults.observe(this, noResultsDataObserver)
 
+        //bind recyclerview adapter
         binding.recyclerViewImage.apply {
             layoutManager = GridLayoutManager(context, 4)
             adapter = imageListAdapter
@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
     override fun onItemClicked(image: Images) {
         val detailActivityIntent=Intent(this,ImageDetailActivity::class.java)
 
-        Log.e("title",image.title)
+        //Log.e("title",image.title)
         detailActivityIntent.putExtra("image_id",image.id)
         detailActivityIntent.putExtra("image_link",image.link)
         detailActivityIntent.putExtra("image_title",image.title)
