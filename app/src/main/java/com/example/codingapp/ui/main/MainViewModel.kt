@@ -1,4 +1,4 @@
-package com.example.codingapp.ui
+package com.example.codingapp.ui.main
 
 import android.app.Application
 import android.util.Log
@@ -15,8 +15,8 @@ import io.reactivex.schedulers.Schedulers
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     val loadError by lazy { MutableLiveData<Boolean>() }
+    val noResults by lazy { MutableLiveData<Boolean>() }
     val loading by lazy { MutableLiveData<Boolean>() }
-
     val imageList by lazy { MutableLiveData<List<Images>>() }
 
     //create shared pref instance
@@ -37,11 +37,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribeWith(object : DisposableSingleObserver<ImageResponse>() {
                     override fun onSuccess(imageResponse: ImageResponse) {
                         if (imageResponse.success) {
+                            noResults.value=false
                             loadError.value = false
                             loading.value = false
                             //images.value=imageResponse
                             filterImagesFromGallery(imageResponse)
                         } else {
+                            noResults.value=false
                             loadError.value = true
                             loading.value = false
                             Log.e("api response fail=", imageResponse.toString())
@@ -50,8 +52,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
                     override fun onError(e: Throwable) {
                         loading.value = false
+                        noResults.value=false
                         loadError.value = true
-                        //images.value=null
                         imageList.value = null
                         e.printStackTrace()
                     }
@@ -72,14 +74,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             for (data in imageResponse.data) {
                 if (!data.images.isNullOrEmpty()) {
                     val list = data.images.filter {
-                        it.type == "image/jpeg" || it.type == "image/png"
-                                || it.type == "image/gif"
+                        it.type == "image/jpeg" || it.type == "image/png" || it.type == "image/gif"
                     }.toMutableList()
+
+                    //assigning titles from parent gallery to child image
+                    list.forEach { it.title=data.title }
+
                     finalList.addAll(list)
                 }
             }
+
             imageList.value = finalList
-            Log.d("size", "size=${finalList.size}")
+
+           // Log.d("size", "size=${finalList.size}")
+        }
+        else if(imageResponse.success && imageResponse.data.isNullOrEmpty()){
+            noResults.value=true
         }
     }
 

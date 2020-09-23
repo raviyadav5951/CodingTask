@@ -1,5 +1,6 @@
-package com.example.codingapp.ui
+package com.example.codingapp.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,9 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.codingapp.R
 import com.example.codingapp.databinding.ActivityMainBinding
 import com.example.codingapp.model.Images
 import com.example.codingapp.ui.adapter.ImageListAdapter
+import com.example.codingapp.ui.detail.ImageDetailActivity
 import com.example.codingapp.util.Util
 
 class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
@@ -38,6 +41,7 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
         viewModel.imageList.observe(this, imagesListDataObserver)
         viewModel.loading.observe(this, loadingLiveDataObserver)
         viewModel.loadError.observe(this, loadingErrorDataObserver)
+        viewModel.noResults.observe(this, noResultsDataObserver)
 
         binding.recyclerViewImage.apply {
             layoutManager = GridLayoutManager(context, 4)
@@ -51,7 +55,7 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
     private fun initSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                Log.d("tag", "text submit is=$query")
+               // Log.d("tag", "text submit is=$query")
 
                 if (!Util.isInternetAvailable(this@MainActivity)) {
                     Toast.makeText(
@@ -67,7 +71,7 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                Log.d("tag", "text change is=$newText")
+                //Log.d("tag", "text change is=$newText")
                 return false
             }
 
@@ -80,17 +84,14 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
 
     private val imagesListDataObserver = Observer<List<Images>> { list ->
         list?.let {
-            Log.e("tag","in imglist oibs")
             binding.recyclerViewImage.visibility = View.VISIBLE
             imageListAdapter.updateImageList(list)
         }
     }
 
     private val loadingLiveDataObserver = Observer<Boolean> { isLoading ->
-        Log.e("tag","loadingLiveDataObserver")
         binding.loadingView.visibility = if (isLoading) View.VISIBLE else View.GONE
         if (isLoading) {
-            Log.e("tag","isLoading")
             binding.listError.visibility = View.GONE
             binding.recyclerViewImage.visibility = View.GONE
         }
@@ -98,9 +99,20 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
     private val loadingErrorDataObserver = Observer<Boolean> { isError ->
         binding.listError.visibility = if (isError) View.VISIBLE else View.GONE
     }
+    private val noResultsDataObserver = Observer<Boolean> { isError ->
+        binding.listError.visibility = if (isError) View.VISIBLE else View.GONE
+        binding.listError.text=getString(R.string.no_results_message)
+    }
+
 
     override fun onItemClicked(image: Images) {
-        Toast.makeText(this@MainActivity, "Clicked", Toast.LENGTH_SHORT).show()
+        val detailActivityIntent=Intent(this,ImageDetailActivity::class.java)
+
+        Log.e("title",image.title)
+        detailActivityIntent.putExtra("image_id",image.id)
+        detailActivityIntent.putExtra("image_link",image.link)
+        detailActivityIntent.putExtra("image_title",image.title)
+        startActivity(detailActivityIntent)
     }
 
 }

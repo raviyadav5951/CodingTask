@@ -67,7 +67,7 @@ data class Tags (
 
 data class Images (
     val id : String,
-    val title : String,
+    var title : String,
     val description : String,
     val datetime : Double,
     val type : String,
