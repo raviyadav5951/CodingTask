@@ -29,7 +29,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val api = ImgurApiService()
 
     fun getImages(searchInput: String?) {
-        loading.value = true
+        loading.postValue(true)
         disposable.add(
             api.getImages(searchInput)
                 .subscribeOn(Schedulers.newThread())
@@ -37,24 +37,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribeWith(object : DisposableSingleObserver<ImageResponse>() {
                     override fun onSuccess(imageResponse: ImageResponse) {
                         if (imageResponse.success) {
-                            noResults.value=false
-                            loadError.value = false
-                            loading.value = false
-                            //images.value=imageResponse
+                            noResults.postValue(false)
+                            loadError.postValue(false)
+                            loading.postValue(false)
                             filterImagesFromGallery(imageResponse)
                         } else {
-                            noResults.value=false
-                            loadError.value = true
-                            loading.value = false
+                            noResults.postValue(false)
+                            loadError.postValue(true)
+                            loading.postValue(false)
                             Log.e("api response fail=", imageResponse.toString())
                         }
                     }
 
                     override fun onError(e: Throwable) {
-                        loading.value = false
-                        noResults.value=false
-                        loadError.value = true
-                        imageList.value = null
+                        loading.postValue(false)
+                        noResults.postValue(false)
+                        loadError.postValue(true)
+                        imageList.postValue(null)
                         e.printStackTrace()
                     }
 
@@ -84,12 +83,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
 
-            imageList.value = finalList
+            imageList.postValue(finalList)
 
            // Log.d("size", "size=${finalList.size}")
         }
         else if(imageResponse.success && imageResponse.data.isNullOrEmpty()){
-            noResults.value=true
+            noResults.postValue(true)
         }
     }
 

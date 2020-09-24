@@ -1,10 +1,11 @@
 package com.example.codingapp.ui.main
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +15,9 @@ import com.example.codingapp.databinding.ActivityMainBinding
 import com.example.codingapp.model.Images
 import com.example.codingapp.ui.adapter.ImageListAdapter
 import com.example.codingapp.ui.detail.ImageDetailActivity
-import com.example.codingapp.util.Util
+import io.reactivex.Observable
+import io.reactivex.ObservableOnSubscribe
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
 
@@ -33,7 +36,7 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
         //initialise the search view
         initSearchView()
 
-        //creating viewmodel
+        //init viewmodel
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         //observer assignment
@@ -52,30 +55,32 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
     /**
      * Searchview control handling for searching the image
      */
+    @SuppressLint("CheckResult")
     private fun initSearchView() {
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-               // Log.d("tag", "text submit is=$query")
+        // Set up the query listener that executes the search
+        Observable
+            .create(ObservableOnSubscribe<String> { subscriber ->
+                binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextChange(newText: String?): Boolean {
+                        subscriber.onNext(newText!!)
+                        return false
+                    }
 
-                if (!Util.isInternetAvailable(this@MainActivity)) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "You are offline.Please switch on the internet connection!!",
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    viewModel.getImages(query)
-                }
-
-                return false
+                    override fun onQueryTextSubmit(query: String?): Boolean {
+                        subscriber.onNext(query!!)
+                        return false
+                    }
+                })
+            })
+            .map { text -> text.toLowerCase().trim() }
+            .debounce(250, TimeUnit.MILLISECONDS)
+            .distinctUntilChanged()
+            .filter { text -> text.isNotBlank() }
+            .subscribe { text ->
+                Log.d("rx", "subscriber: $text")
+                viewModel.getImages(text)
             }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                //Log.d("tag", "text change is=$newText")
-                return false
-            }
-
-        })
     }
 
     /**
@@ -114,5 +119,6 @@ class MainActivity : AppCompatActivity(),ImageListAdapter.OnItemClickListener {
         detailActivityIntent.putExtra("image_title",image.title)
         startActivity(detailActivityIntent)
     }
+
 
 }
