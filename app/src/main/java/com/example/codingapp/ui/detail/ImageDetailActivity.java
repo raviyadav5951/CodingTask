@@ -1,13 +1,15 @@
 package com.example.codingapp.ui.detail;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.codingapp.R;
@@ -106,23 +108,19 @@ public class ImageDetailActivity extends AppCompatActivity {
                 ImageEntity imageEntity=new ImageEntity(imageId,detailBinding.etComment.getText().toString().trim());
                 dbRepository.insert(imageEntity);
                 Toast.makeText(ImageDetailActivity.this, getString(R.string.record_insert_message), Toast.LENGTH_SHORT).show();
+                hideSoftKeyboard(ImageDetailActivity.this);
             }
         }
     };
 
-    /**
-     * Custom progress drawable to show loader.
-     */
-    private CircularProgressDrawable getProgressDrawable() {
-        CircularProgressDrawable progressDrawable = new CircularProgressDrawable(this);
-        progressDrawable.setStrokeWidth(10.0f);
-        progressDrawable.setCenterRadius(10.0f);
-        return progressDrawable;
-    }
 
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+    public  void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 }
