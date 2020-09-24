@@ -1,6 +1,8 @@
 package com.example.codingapp.util
 
 import android.content.Context
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
@@ -16,13 +18,13 @@ fun getProgressDrawable(context: Context): CircularProgressDrawable {
     }
 }
 
+fun View.hideKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(windowToken, 0)
+}
+
 
 fun ImageView.loadImage(view: ImageView, url: String?) {
-//    view.load(url){
-//        placeholder(getProgressDrawable(view.context))
-//        error(R.mipmap.ic_launcher_round)
-//    }
-
     val options = RequestOptions()
         .placeholder(getProgressDrawable(view.context))
         .error(R.drawable.placeholder)

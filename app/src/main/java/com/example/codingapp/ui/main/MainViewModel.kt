@@ -18,6 +18,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val noResults by lazy { MutableLiveData<Boolean>() }
     val loading by lazy { MutableLiveData<Boolean>() }
     val imageList by lazy { MutableLiveData<List<Images>>() }
+    val loadMoreImageList by lazy { MutableLiveData<List<Images>>() }
 
     //create shared pref instance
     val prefs = SharedPreferenceHelper(getApplication())
@@ -40,7 +41,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             noResults.postValue(false)
                             loadError.postValue(false)
                             loading.postValue(false)
-                            filterImagesFromGallery(imageResponse)
+                            filterImagesFromGallery(imageResponse,isLoadMore = false)
                         } else {
                             noResults.postValue(false)
                             loadError.postValue(true)
@@ -62,11 +63,45 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
+     * Get Images By Page Number.
+     * This method is being used in the load more i.e Endless scroll
+     */
+    fun getImagesByPageNumber(pageNum:Int=2,searchInput: String?) {
+        disposable.add(
+            api.getImages(pageNumber = pageNum,searchInput = searchInput)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableSingleObserver<ImageResponse>() {
+                    override fun onSuccess(imageResponse: ImageResponse) {
+                        if (imageResponse.success) {
+                            filterImagesFromGallery(imageResponse,isLoadMore = true)
+                        } else {
+                            noResults.postValue(false)
+                            loadError.postValue(true)
+                            loading.postValue(false)
+                            Log.e("api response fail=", imageResponse.toString())
+                        }
+                    }
+
+                    override fun onError(e: Throwable) {
+                        loading.postValue(false)
+                        noResults.postValue(false)
+                        loadError.postValue(true)
+                        imageList.postValue(null)
+                        e.printStackTrace()
+                    }
+
+                })
+        )
+    }
+
+
+    /**
      * @param imageResponse the response from server
      * We are performing filter to separate the jpeg/png/gif images from gallery search.
      */
 
-    fun filterImagesFromGallery(imageResponse: ImageResponse) {
+    fun filterImagesFromGallery(imageResponse: ImageResponse,isLoadMore:Boolean=false) {
         var finalList = mutableListOf<Images>()
 
         if (imageResponse.success && !imageResponse.data.isNullOrEmpty()) {
@@ -82,10 +117,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     finalList.addAll(list)
                 }
             }
+            if(isLoadMore) loadMoreImageList.postValue(finalList)
+            else imageList.postValue(finalList)
 
-            imageList.postValue(finalList)
-
-           // Log.d("size", "size=${finalList.size}")
+            Log.d("size", "size=${finalList.size}")
         }
         else if(imageResponse.success && imageResponse.data.isNullOrEmpty()){
             noResults.postValue(true)

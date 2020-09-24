@@ -28,7 +28,7 @@ class ImgurApiService {
         .build()
         .create(ImgurApi::class.java)
 
-    fun getImages(searchInput:String?):Single<ImageResponse> = api.getImagesFromImgur(searchInput)
+    fun getImages(searchInput:String?,pageNumber:Int=1):Single<ImageResponse> = api.getImagesFromImgur(pageNumber=pageNumber,searchInput=searchInput)
 
     //Here we have added the interceptor to display logs when api is called.
     private fun createRequestInterceptorClient(): OkHttpClient {

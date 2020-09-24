@@ -2,6 +2,7 @@
     <string name="app_name">Coding Task</string>
     <string name="edit_hint">Enter your comments here.</string>
     <string name="button_submit">Submit</string>
+    <string name="no_internet_message">You are offline.Please switch on the internet connection!!</string>
     <string name="error_message">An error occured while loading data.</string>
     <string name="no_results_message">No results find.Please try again with new search input.</string>
 

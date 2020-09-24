@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.widget.Toast
+import com.example.codingapp.R
 
 object Util {
 
@@ -36,6 +38,13 @@ object Util {
         }
 
         return result
+    }
+
+    fun showNoInternetMessage(context: Context){
+        Toast.makeText(
+            context, context.getString(R.string.no_internet_message),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
 
