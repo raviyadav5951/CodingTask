@@ -4,14 +4,16 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.example.codingapp.di.AppModule
+import com.example.codingapp.di.DaggerViewModelComponent
 import com.example.codingapp.model.ImageResponse
 import com.example.codingapp.model.Images
 import com.example.codingapp.network.ImgurApiService
-import com.example.codingapp.util.SharedPreferenceHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     val loadError by lazy { MutableLiveData<Boolean>() }
@@ -20,15 +22,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val imageList by lazy { MutableLiveData<List<Images>>() }
     val loadMoreImageList by lazy { MutableLiveData<List<Images>>() }
 
-    //create shared pref instance
-    val prefs = SharedPreferenceHelper(getApplication())
-
     //create disposable and release it later in onCleared
     private val disposable = CompositeDisposable()
 
     //create api service
-    private val api = ImgurApiService()
+    @Inject
+    lateinit var api: ImgurApiService
 
+    init {
+        DaggerViewModelComponent.builder()
+            .appModule(AppModule(getApplication()))
+            .build()
+            .inject(this)
+    }
     fun getImages(searchInput: String?) {
         loading.postValue(true)
         disposable.add(
