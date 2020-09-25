@@ -1,3 +1,4 @@
+
 ## Topics Covered:
 Rxjava,ViewModel,Live Data,Room Db,Mockito,JUnit,Dagger2
 
@@ -15,7 +16,12 @@ Rxjava,ViewModel,Live Data,Room Db,Mockito,JUnit,Dagger2
 https://github.com/raviyadav5951/CodingTask/tree/master/apk
 
 ## Screenshots :
-![Alt text ](/screenshots/screen1.png?raw=true "Search Screen 1") {:height="700px" width="400px"}
+**Screen 1:**
+<img src="https://raw.githubusercontent.com/raviyadav5951/CodingTask/master/screenshots/screen1.png" width="640" height="1280" title="Screen 1">
 
-![Alt text](/screenshots/screen1.png?raw=true "Detail Screen 2") {:height="700px" width="400px"}
+**Screen 2:**
+<img src="https://raw.githubusercontent.com/raviyadav5951/CodingTask/master/screenshots/screen2.png" width="640" height="1280" title="Screen 2">
+
+
+
 
