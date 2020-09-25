@@ -1,5 +1,6 @@
 package com.example.codingapp.di
 
+import com.example.codingapp.BuildConfig
 import com.example.codingapp.network.ImgurApi
 import com.example.codingapp.network.ImgurApiService
 import dagger.Module
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeUnit
 private val BASE_URL = "https://api.imgur.com"
 private const val REQUEST_TIMEOUT_DURATION = 10
 private const val DEBUG = true
-private const val AUTH_HEADER = "Client-ID 137cda6b5008a7c"
+private const val AUTH_HEADER = BuildConfig.AUTH_HEADER
 
 
 @Module

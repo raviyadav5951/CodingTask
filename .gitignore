@@ -64,3 +64,4 @@ Thumbs.db
 /captures
 .externalNativeBuild
 .cxx
+/apikey.properties
