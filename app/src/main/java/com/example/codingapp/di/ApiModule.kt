@@ -19,7 +19,7 @@ private const val AUTH_HEADER = "Client-ID 137cda6b5008a7c"
 
 
 @Module
-class ApiModule {
+open class ApiModule {
 
     @Provides
     fun provideImageApi():ImgurApi{
@@ -61,7 +61,7 @@ class ApiModule {
     }
 
     @Provides
-    fun provideAnimalApiService():ImgurApiService{
+    open fun provideImgurApiService():ImgurApiService{
         return ImgurApiService()
     }
 }

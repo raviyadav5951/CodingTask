@@ -50,9 +50,9 @@ class ImageListAdapter(
     /**
      * Update the list as soon as results arrived in the list
      */
-    fun updateImageList(newAnimalList: List<Images>) {
+    fun updateImageList(newImageList: List<Images>) {
         imageList.clear()
-        imageList.addAll(newAnimalList)
+        imageList.addAll(newImageList)
         notifyDataSetChanged()
     }
 

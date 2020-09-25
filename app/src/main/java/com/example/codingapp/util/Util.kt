@@ -9,6 +9,9 @@ import com.example.codingapp.R
 
 object Util {
 
+    /**
+     * Check Internet connectivity before making api calls.
+     */
     fun isInternetAvailable(context: Context): Boolean {
         var result = false
         val connectivityManager =
@@ -40,6 +43,9 @@ object Util {
         return result
     }
 
+    /**
+     * Show no internet connection message.
+     */
     fun showNoInternetMessage(context: Context){
         Toast.makeText(
             context, context.getString(R.string.no_internet_message),

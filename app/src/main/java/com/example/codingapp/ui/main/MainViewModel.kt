@@ -15,6 +15,7 @@ import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     val loadError by lazy { MutableLiveData<Boolean>() }
     val noResults by lazy { MutableLiveData<Boolean>() }
@@ -47,7 +48,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             noResults.postValue(false)
                             loadError.postValue(false)
                             loading.postValue(false)
-                            filterImagesFromGallery(imageResponse,isLoadMore = false)
+                            filterImagesFromGallery(imageResponse, isLoadMore = false)
                         } else {
                             noResults.postValue(false)
                             loadError.postValue(true)
@@ -72,15 +73,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * Get Images By Page Number.
      * This method is being used in the load more i.e Endless scroll
      */
-    fun getImagesByPageNumber(pageNum:Int=2,searchInput: String?) {
+    fun getImagesByPageNumber(pageNum: Int = 2, searchInput: String?) {
         disposable.add(
-            api.getImages(pageNumber = pageNum,searchInput = searchInput)
+            api.getImages(pageNumber = pageNum, searchInput = searchInput)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableSingleObserver<ImageResponse>() {
                     override fun onSuccess(imageResponse: ImageResponse) {
                         if (imageResponse.success) {
-                            filterImagesFromGallery(imageResponse,isLoadMore = true)
+                            filterImagesFromGallery(imageResponse, isLoadMore = true)
                         } else {
                             noResults.postValue(false)
                             loadError.postValue(true)
@@ -107,7 +108,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * We are performing filter to separate the jpeg/png/gif images from gallery search.
      */
 
-    fun filterImagesFromGallery(imageResponse: ImageResponse,isLoadMore:Boolean=false) {
+    fun filterImagesFromGallery(imageResponse: ImageResponse, isLoadMore: Boolean = false) {
         var finalList = mutableListOf<Images>()
 
         if (imageResponse.success && !imageResponse.data.isNullOrEmpty()) {
@@ -125,8 +126,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             if(isLoadMore) loadMoreImageList.postValue(finalList)
             else imageList.postValue(finalList)
-
-            Log.d("size", "size=${finalList.size}")
         }
         else if(imageResponse.success && imageResponse.data.isNullOrEmpty()){
             noResults.postValue(true)

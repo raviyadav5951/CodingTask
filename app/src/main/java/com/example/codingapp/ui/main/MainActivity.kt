@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity(), ImageListAdapter.OnItemClickListener {
             .create(ObservableOnSubscribe<String> { subscriber ->
                 binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextChange(newText: String?): Boolean {
-                        defaultPageNumber=1
+                        defaultPageNumber = 1
                         if (Util.isInternetAvailable(this@MainActivity)) {
                             subscriber.onNext(newText!!)
                         } else {
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), ImageListAdapter.OnItemClickListener {
                     }
 
                     override fun onQueryTextSubmit(query: String?): Boolean {
-                        defaultPageNumber=1
+                        defaultPageNumber = 1
                         if (Util.isInternetAvailable(this@MainActivity)) {
                             subscriber.onNext(query!!)
                         } else {
@@ -113,7 +113,6 @@ class MainActivity : AppCompatActivity(), ImageListAdapter.OnItemClickListener {
                 searchInput = text
                 viewModel.getImages(text)
             }
-
     }
 
 
@@ -160,7 +159,9 @@ class MainActivity : AppCompatActivity(), ImageListAdapter.OnItemClickListener {
         binding.listError.text = getString(R.string.no_results_message)
     }
 
-
+    /**
+     * Handled onclick event of adapter list item
+     */
     override fun onItemClicked(image: Images?) {
         val detailActivityIntent = Intent(this, ImageDetailActivity::class.java)
 
@@ -171,6 +172,9 @@ class MainActivity : AppCompatActivity(), ImageListAdapter.OnItemClickListener {
         startActivity(detailActivityIntent)
     }
 
+    /**
+     * Grid layour manager for adapter
+     */
     private fun setRVLayoutManager() {
         mLayoutManager = GridLayoutManager(this, 4)
         binding.recyclerViewImage.layoutManager = mLayoutManager
@@ -188,6 +192,9 @@ class MainActivity : AppCompatActivity(), ImageListAdapter.OnItemClickListener {
             }
     }
 
+    /**
+     * Custom load more scroll listener for recycler view
+     */
     private fun setRVScrollListener() {
         scrollListener = RecyclerViewLoadMoreScroll(mLayoutManager as GridLayoutManager)
         scrollListener.setOnLoadMoreListener(object :
@@ -200,16 +207,19 @@ class MainActivity : AppCompatActivity(), ImageListAdapter.OnItemClickListener {
         binding.recyclerViewImage.addOnScrollListener(scrollListener)
     }
 
+    /**
+     * Function responsible to make api calls on load more
+     *
+     */
     private fun loadMoreData() {
-        if(Util.isInternetAvailable(this)) {
+        if (Util.isInternetAvailable(this)) {
             //Add the Loading View
             imageListAdapter.addLoadingView()
             viewModel.getImagesByPageNumber(
                 pageNum = defaultPageNumber++,
-                searchInput = searchInput)
-        }
-        else
-        {
+                searchInput = searchInput
+            )
+        } else {
             Util.showNoInternetMessage(this)
         }
 
